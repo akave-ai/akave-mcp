@@ -1,8 +1,8 @@
+import { S3Client as AWSS3Client } from "@aws-sdk/client-s3";
 import {
-  S3Client as AWSS3Client,
+  GetObjectCommand,
   ListBucketsCommand,
   ListObjectsV2Command,
-  GetObjectCommand,
   PutObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
@@ -16,11 +16,12 @@ export class S3Client {
   constructor() {
     this.client = new AWSS3Client({
       endpoint: process.env.AKAVE_ENDPOINT_URL,
+      region: "us-east-1",
       credentials: {
-        accessKeyId: process.env.AKAVE_ACCESS_KEY_ID!,
-        secretAccessKey: process.env.AKAVE_SECRET_ACCESS_KEY!,
+        accessKeyId: process.env.AKAVE_ACCESS_KEY_ID || "",
+        secretAccessKey: process.env.AKAVE_SECRET_ACCESS_KEY || "",
       },
-      region: "us-east-1", // Default region, can be overridden
+      forcePathStyle: true,
     });
   }
 
@@ -40,21 +41,26 @@ export class S3Client {
   }
 
   async getObject(bucket: string, key: string) {
-    const command = new GetObjectCommand({
-      Bucket: bucket,
-      Key: key,
-    });
-    const response = await this.client.send(command);
-    return response.Body;
+    try {
+      const command = new GetObjectCommand({
+        Bucket: bucket,
+        Key: key,
+      });
+      const response = await this.client.send(command);
+      return response.Body;
+    } catch (error) {
+      console.error("Error getting object:", error);
+      return null;
+    }
   }
 
-  async putObject(bucket: string, key: string, body: Buffer | string) {
+  async putObject(bucket: string, key: string, body: string) {
     const command = new PutObjectCommand({
       Bucket: bucket,
       Key: key,
       Body: body,
     });
-    return await this.client.send(command);
+    await this.client.send(command);
   }
 
   async getSignedUrl(bucket: string, key: string, expiresIn = 3600) {

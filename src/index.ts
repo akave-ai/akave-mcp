@@ -1,4 +1,9 @@
-import { AkaveMCPServer } from "./server";
+#!/usr/bin/env node
+
+import { AkaveMCPServer } from "./server.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 async function main() {
   const server = new AkaveMCPServer();
@@ -9,10 +14,12 @@ async function main() {
     process.exit(0);
   });
 
-  await server.start();
+  try {
+    await server.start();
+  } catch (error) {
+    console.error("Failed to start server:", error);
+    process.exit(1);
+  }
 }
 
-main().catch((error) => {
-  console.error("Error starting server:", error);
-  process.exit(1);
-});
+main();
