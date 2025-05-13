@@ -166,6 +166,136 @@ export class AkaveMCPServer {
       }
     );
 
+    this.server.tool(
+      "update_object",
+      "Update (overwrite) an object in a bucket",
+      {
+        bucket: z.string().describe("Bucket name"),
+        key: z.string().describe("Object key"),
+        body: z.string().describe("New object content"),
+      },
+      async ({ bucket, key, body }) => {
+        await this.s3Client.updateObject(bucket, key, body);
+        return {
+          content: [{ type: "text", text: JSON.stringify({ success: true }) }],
+        };
+      }
+    );
+
+    this.server.tool(
+      "fetch_headers",
+      "Fetch headers/metadata for an object",
+      {
+        bucket: z.string().describe("Bucket name"),
+        key: z.string().describe("Object key"),
+      },
+      async ({ bucket, key }) => {
+        const headers = await this.s3Client.fetchHeaders(bucket, key);
+        return {
+          content: [{ type: "text", text: JSON.stringify(headers) }],
+        };
+      }
+    );
+
+    this.server.tool(
+      "delete_object",
+      "Delete an object from a bucket",
+      {
+        bucket: z.string().describe("Bucket name"),
+        key: z.string().describe("Object key"),
+      },
+      async ({ bucket, key }) => {
+        await this.s3Client.deleteObject(bucket, key);
+        return {
+          content: [{ type: "text", text: JSON.stringify({ success: true }) }],
+        };
+      }
+    );
+
+    this.server.tool(
+      "copy_object",
+      "Copy an object to another bucket/key",
+      {
+        sourceBucket: z.string().describe("Source bucket name"),
+        sourceKey: z.string().describe("Source object key"),
+        destinationBucket: z.string().describe("Destination bucket name"),
+        destinationKey: z.string().describe("Destination object key"),
+      },
+      async ({
+        sourceBucket,
+        sourceKey,
+        destinationBucket,
+        destinationKey,
+      }) => {
+        await this.s3Client.copyObject(
+          sourceBucket,
+          sourceKey,
+          destinationBucket,
+          destinationKey
+        );
+        return {
+          content: [{ type: "text", text: JSON.stringify({ success: true }) }],
+        };
+      }
+    );
+
+    this.server.tool(
+      "create_bucket",
+      "Create a new bucket",
+      {
+        bucket: z.string().describe("Bucket name"),
+      },
+      async ({ bucket }) => {
+        await this.s3Client.createBucket(bucket);
+        return {
+          content: [{ type: "text", text: JSON.stringify({ success: true }) }],
+        };
+      }
+    );
+
+    this.server.tool(
+      "delete_bucket",
+      "Delete a bucket",
+      {
+        bucket: z.string().describe("Bucket name"),
+      },
+      async ({ bucket }) => {
+        await this.s3Client.deleteBucket(bucket);
+        return {
+          content: [{ type: "text", text: JSON.stringify({ success: true }) }],
+        };
+      }
+    );
+
+    this.server.tool(
+      "get_bucket_location",
+      "Get the region/location of a bucket",
+      {
+        bucket: z.string().describe("Bucket name"),
+      },
+      async ({ bucket }) => {
+        const location = await this.s3Client.getBucketLocation(bucket);
+        return {
+          content: [{ type: "text", text: JSON.stringify(location) }],
+        };
+      }
+    );
+
+    this.server.tool(
+      "list_object_versions",
+      "List all versions of objects in a bucket (if versioning enabled)",
+      {
+        bucket: z.string().describe("Bucket name"),
+        prefix: z.string().optional().describe("Prefix to filter objects"),
+      },
+      async ({ bucket, prefix }) => {
+        const versions = await this.s3Client.listObjectVersions(bucket, prefix);
+        return {
+          content: [{ type: "text", text: JSON.stringify(versions) }],
+        };
+      }
+    );
+
     this.transport = new StdioServerTransport();
   }
 

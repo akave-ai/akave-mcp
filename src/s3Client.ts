@@ -4,6 +4,13 @@ import {
   ListBucketsCommand,
   ListObjectsV2Command,
   PutObjectCommand,
+  HeadObjectCommand,
+  DeleteObjectCommand,
+  CopyObjectCommand,
+  CreateBucketCommand,
+  DeleteBucketCommand,
+  GetBucketLocationCommand,
+  ListObjectVersionsCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import dotenv from "dotenv";
@@ -61,6 +68,70 @@ export class S3Client {
       Body: body,
     });
     await this.client.send(command);
+  }
+
+  async updateObject(bucket: string, key: string, body: string) {
+    // S3 putObject overwrites by default
+    return this.putObject(bucket, key, body);
+  }
+
+  async fetchHeaders(bucket: string, key: string) {
+    const command = new HeadObjectCommand({
+      Bucket: bucket,
+      Key: key,
+    });
+    return await this.client.send(command);
+  }
+
+  async deleteObject(bucket: string, key: string) {
+    const command = new DeleteObjectCommand({
+      Bucket: bucket,
+      Key: key,
+    });
+    return await this.client.send(command);
+  }
+
+  async copyObject(
+    sourceBucket: string,
+    sourceKey: string,
+    destinationBucket: string,
+    destinationKey: string
+  ) {
+    const command = new CopyObjectCommand({
+      Bucket: destinationBucket,
+      Key: destinationKey,
+      CopySource: `/${sourceBucket}/${sourceKey}`,
+    });
+    return await this.client.send(command);
+  }
+
+  async createBucket(bucket: string) {
+    const command = new CreateBucketCommand({
+      Bucket: bucket,
+    });
+    return await this.client.send(command);
+  }
+
+  async deleteBucket(bucket: string) {
+    const command = new DeleteBucketCommand({
+      Bucket: bucket,
+    });
+    return await this.client.send(command);
+  }
+
+  async getBucketLocation(bucket: string) {
+    const command = new GetBucketLocationCommand({
+      Bucket: bucket,
+    });
+    return await this.client.send(command);
+  }
+
+  async listObjectVersions(bucket: string, prefix?: string) {
+    const command = new ListObjectVersionsCommand({
+      Bucket: bucket,
+      Prefix: prefix,
+    });
+    return await this.client.send(command);
   }
 
   async getSignedUrl(bucket: string, key: string, expiresIn = 3600) {
