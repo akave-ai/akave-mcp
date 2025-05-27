@@ -1,6 +1,6 @@
 {
   "name": "akave-mcp-js",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Model Control Protocol (MCP) server for Akave's S3-compatible storage",
   "type": "module",
   "main": "dist/index.js",
