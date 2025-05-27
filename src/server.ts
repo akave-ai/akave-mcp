@@ -110,11 +110,22 @@ export class AkaveMCPServer {
             isError: true,
           };
         }
+
+        // Ensure we're returning a proper string
+        let content =
+          typeof object === "string" ? object : JSON.stringify(object);
+
+        // For markdown files, ensure proper formatting
+        if (key.endsWith(".md")) {
+          // Remove any potential BOM or special characters
+          content = content.replace(/^\uFEFF/, "").trim();
+        }
+
         return {
           content: [
             {
               type: "text",
-              text: object,
+              text: content,
             },
           ],
         };

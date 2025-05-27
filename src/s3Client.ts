@@ -64,7 +64,51 @@ export class S3Client {
         chunks.push(chunk);
       }
       const buffer = Buffer.concat(chunks);
-      return buffer.toString("utf-8");
+      const text = buffer.toString("utf-8");
+
+      // Handle different file types
+      const extension = key.split(".").pop()?.toLowerCase();
+
+      // Text-based files that should be cleaned
+      const textFileExtensions = [
+        "md",
+        "txt",
+        "json",
+        "yaml",
+        "yml",
+        "xml",
+        "html",
+        "css",
+        "js",
+        "ts",
+        "py",
+        "sh",
+        "bash",
+      ];
+
+      if (textFileExtensions.includes(extension || "")) {
+        // Clean the text content
+        const cleanedText = text
+          .replace(/^\uFEFF/, "") // Remove BOM
+          .trim(); // Remove extra whitespace
+
+        // Special handling for JSON files
+        if (extension === "json") {
+          try {
+            // Validate and format JSON
+            const parsed = JSON.parse(cleanedText);
+            return JSON.stringify(parsed, null, 2);
+          } catch {
+            // If JSON parsing fails, return as is
+            return cleanedText;
+          }
+        }
+
+        return cleanedText;
+      }
+
+      // For binary or unknown file types, return as is
+      return text;
     } catch (error) {
       console.error("Error getting object:", error);
       return null;
