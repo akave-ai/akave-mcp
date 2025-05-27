@@ -54,7 +54,17 @@ export class S3Client {
         Key: key,
       });
       const response = await this.client.send(command);
-      return response.Body;
+      if (!response.Body) {
+        return null;
+      }
+      // Convert the response body to string
+      const bodyStream = response.Body as any;
+      const chunks: Uint8Array[] = [];
+      for await (const chunk of bodyStream) {
+        chunks.push(chunk);
+      }
+      const buffer = Buffer.concat(chunks);
+      return buffer.toString("utf-8");
     } catch (error) {
       console.error("Error getting object:", error);
       return null;

@@ -2,11 +2,11 @@
   "mcpServers": {
     "Akave Storage": {
       "command": "node",
-      "args": ["dist/index.js"],
+      "args": ["<path-to-dist-folder>/dist/index.js"],
       "env": {
-        "AKAVE_ACCESS_KEY_ID": "O3_QEYOOVCMMRQJ2D9XV",
-        "AKAVE_SECRET_ACCESS_KEY": "dSLUocEQUrM3H7GiD9JTjYc4nHwByMcw7W3Cha",
-        "AKAVE_ENDPOINT_URL": "https://o3-rc2.akave.xyz"
+        "AKAVE_ACCESS_KEY_ID": "***",
+        "AKAVE_SECRET_ACCESS_KEY": "***",
+        "AKAVE_ENDPOINT_URL": "https://o3-rc1.akave.xyz"
       }
     }
   }

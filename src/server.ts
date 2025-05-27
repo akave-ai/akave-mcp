@@ -114,7 +114,7 @@ export class AkaveMCPServer {
           content: [
             {
               type: "text",
-              text: object.toString(),
+              text: object,
             },
           ],
         };
