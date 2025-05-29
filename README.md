@@ -21,7 +21,9 @@ The Model Context Protocol (MCP) is an open protocol that standardizes how appli
   - Access Key ID
   - Secret Access Key
   - Endpoint URL
-- For local LLM support: [Ollama](https://ollama.ai) installed
+- For local LLM support:
+  - Go 1.23 or later  
+  - [Ollama](https://ollama.ai) installed
 
 ## Quick Start
 
